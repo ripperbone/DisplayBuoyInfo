@@ -26,6 +26,7 @@ namespace DisplayBuoyInfo
         private static string METERS = "meters";
         private static char CELSIUS = 'C';
         private static char FAHRENHEIT = 'F';
+        private static string KNOTS = "knots";
 
 
         public Form1()
@@ -97,13 +98,27 @@ namespace DisplayBuoyInfo
             float windSpeed = info.getWindSpeed();
             if (windSpeed < 1000)
             {
-                windSpeedBox.Text = windSpeed.ToString() + SPACE + METERS_PER_SEC;
+                if (knotsCheckBox.Checked)
+                {
+                    windSpeedBox.Text = metersPerSecondToKnots(windSpeed).ToString() + SPACE + KNOTS;
+                }
+                else
+                {
+                    windSpeedBox.Text = windSpeed.ToString() + SPACE + METERS_PER_SEC;
+                }
             }
 
             float gust = info.getGust();
             if (gust < 1000)
             {
-                gustBox.Text = gust.ToString() + SPACE + METERS_PER_SEC;
+                if (knotsCheckBox.Checked)
+                {
+                    gustBox.Text = metersPerSecondToKnots(gust).ToString() + SPACE + KNOTS;
+                }
+                else
+                {
+                    gustBox.Text = gust.ToString() + SPACE + METERS_PER_SEC;
+                }
             }
 
             float waveHeight = info.getWaveHeight();
@@ -350,6 +365,12 @@ namespace DisplayBuoyInfo
 
         }
 
+        private float metersPerSecondToKnots(float metersPerSecond)
+        {
+            int numOfDecimalPlaces = 1;
+            return (System.Convert.ToSingle(Math.Round(System.Convert.ToDouble(metersPerSecond) * 1.9438, numOfDecimalPlaces)));
+        }
+
         private void fahrenheitCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (_buoyDataList != null && _buoyDataList.Count > 0)
@@ -357,6 +378,14 @@ namespace DisplayBuoyInfo
                 setDataOnForm();
             }
            
+        }
+
+        private void knotsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_buoyDataList != null && _buoyDataList.Count > 0)
+            {
+                setDataOnForm();
+            }
         }
     }
 }

@@ -47,6 +47,7 @@
             this.previousButton = new System.Windows.Forms.Button();
             this.timeZoneLabel = new System.Windows.Forms.Label();
             this.fahrenheitCheckBox = new System.Windows.Forms.CheckBox();
+            this.knotsCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // getDataButton
@@ -211,11 +212,23 @@
             this.fahrenheitCheckBox.UseVisualStyleBackColor = true;
             this.fahrenheitCheckBox.CheckedChanged += new System.EventHandler(this.fahrenheitCheckBox_CheckedChanged);
             // 
+            // knotsCheckBox
+            // 
+            this.knotsCheckBox.AutoSize = true;
+            this.knotsCheckBox.Location = new System.Drawing.Point(15, 319);
+            this.knotsCheckBox.Name = "knotsCheckBox";
+            this.knotsCheckBox.Size = new System.Drawing.Size(53, 17);
+            this.knotsCheckBox.TabIndex = 21;
+            this.knotsCheckBox.Text = "Knots";
+            this.knotsCheckBox.UseVisualStyleBackColor = true;
+            this.knotsCheckBox.CheckedChanged += new System.EventHandler(this.knotsCheckBox_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 453);
+            this.Controls.Add(this.knotsCheckBox);
             this.Controls.Add(this.fahrenheitCheckBox);
             this.Controls.Add(this.timeZoneLabel);
             this.Controls.Add(this.previousButton);
@@ -263,6 +276,7 @@
         private System.Windows.Forms.Button previousButton;
         private System.Windows.Forms.Label timeZoneLabel;
         private System.Windows.Forms.CheckBox fahrenheitCheckBox;
+        private System.Windows.Forms.CheckBox knotsCheckBox;
     }
 }
 
