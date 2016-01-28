@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -157,21 +158,33 @@ namespace DisplayBuoyInfo
 
 
 
-        private void getDataButton_Click(object sender, EventArgs e)
+
+        private static Task DownloadFileAsync(string url, string path)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {              
+                    WebClient web = new WebClient();
+                    web.DownloadFile(url, path);
+                }
+                catch (WebException ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    return;
+                }
+            });
+        }
+
+        private async void getDataButton_Click(object sender, EventArgs e)
         {
 
             string url = "http://www.ndbc.noaa.gov/data/5day2/45007_5day.txt";
+            
 
-            WebClient web = new WebClient();
+            await DownloadFileAsync(url, _path);
 
-            try
-            {
-                web.DownloadFile(url, _path);
-            } catch (WebException ex)
-            {
-                MessageBox.Show(ex.ToString());
-                return;
-            }
+            
             
 
             _buoyDataList = getBuoyInfo();
