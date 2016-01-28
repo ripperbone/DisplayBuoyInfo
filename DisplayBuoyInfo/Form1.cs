@@ -178,9 +178,14 @@ namespace DisplayBuoyInfo
 
         private async void getDataButton_Click(object sender, EventArgs e)
         {
-
-            string url = "http://www.ndbc.noaa.gov/data/5day2/45007_5day.txt";
+            string buoyId = buoyIdentifier.Text;
+            if (buoyId.Length != 5){
+                MessageBox.Show("Please specify a 5 digit buoy identifier.");
+                return;
+            }
             
+
+            string url = string.Format("http://www.ndbc.noaa.gov/data/5day2/{0}_5day.txt", buoyId);
 
             await DownloadFileAsync(url, _path);
 
@@ -193,6 +198,7 @@ namespace DisplayBuoyInfo
             {
 
                 setDataOnForm();
+                MessageBox.Show(string.Format("Retrieved data for buoy {0}.", buoyId));
 
             }
             else
@@ -399,6 +405,12 @@ namespace DisplayBuoyInfo
             {
                 setDataOnForm();
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            buoyIdentifier.DataSource = new List<string> { "45007", "46029" };
+
         }
     }
 }

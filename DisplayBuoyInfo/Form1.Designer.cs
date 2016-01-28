@@ -48,6 +48,9 @@
             this.timeZoneLabel = new System.Windows.Forms.Label();
             this.fahrenheitCheckBox = new System.Windows.Forms.CheckBox();
             this.knotsCheckBox = new System.Windows.Forms.CheckBox();
+            this.helpProvider1 = new System.Windows.Forms.HelpProvider();
+            this.buoyLabel = new System.Windows.Forms.Label();
+            this.buoyIdentifier = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // getDataButton
@@ -64,7 +67,7 @@
             // 
             this.AirTempBox.Location = new System.Drawing.Point(155, 223);
             this.AirTempBox.Name = "AirTempBox";
-            this.AirTempBox.Size = new System.Drawing.Size(116, 20);
+            this.AirTempBox.Size = new System.Drawing.Size(100, 20);
             this.AirTempBox.TabIndex = 1;
             // 
             // airTemperatureLabel
@@ -72,7 +75,7 @@
             this.airTemperatureLabel.AutoSize = true;
             this.airTemperatureLabel.Location = new System.Drawing.Point(152, 246);
             this.airTemperatureLabel.Name = "airTemperatureLabel";
-            this.airTemperatureLabel.Size = new System.Drawing.Size(82, 13);
+            this.airTemperatureLabel.Size = new System.Drawing.Size(95, 15);
             this.airTemperatureLabel.TabIndex = 2;
             this.airTemperatureLabel.Text = "Air Temperature";
             // 
@@ -88,7 +91,7 @@
             // 
             // dateBox
             // 
-            this.dateBox.Location = new System.Drawing.Point(15, 51);
+            this.dateBox.Location = new System.Drawing.Point(15, 75);
             this.dateBox.Name = "dateBox";
             this.dateBox.Size = new System.Drawing.Size(240, 20);
             this.dateBox.TabIndex = 4;
@@ -96,9 +99,9 @@
             // dateBoxLabel
             // 
             this.dateBoxLabel.AutoSize = true;
-            this.dateBoxLabel.Location = new System.Drawing.Point(12, 74);
+            this.dateBoxLabel.Location = new System.Drawing.Point(12, 98);
             this.dateBoxLabel.Name = "dateBoxLabel";
-            this.dateBoxLabel.Size = new System.Drawing.Size(30, 13);
+            this.dateBoxLabel.Size = new System.Drawing.Size(33, 15);
             this.dateBoxLabel.TabIndex = 5;
             this.dateBoxLabel.Text = "Date";
             // 
@@ -114,7 +117,7 @@
             this.windDirectionLabel.AutoSize = true;
             this.windDirectionLabel.Location = new System.Drawing.Point(12, 180);
             this.windDirectionLabel.Name = "windDirectionLabel";
-            this.windDirectionLabel.Size = new System.Drawing.Size(77, 13);
+            this.windDirectionLabel.Size = new System.Drawing.Size(87, 15);
             this.windDirectionLabel.TabIndex = 7;
             this.windDirectionLabel.Text = "Wind Direction";
             // 
@@ -130,7 +133,7 @@
             this.windSpeedLabel.AutoSize = true;
             this.windSpeedLabel.Location = new System.Drawing.Point(152, 179);
             this.windSpeedLabel.Name = "windSpeedLabel";
-            this.windSpeedLabel.Size = new System.Drawing.Size(66, 13);
+            this.windSpeedLabel.Size = new System.Drawing.Size(74, 15);
             this.windSpeedLabel.TabIndex = 11;
             this.windSpeedLabel.Text = "Wind Speed";
             // 
@@ -139,7 +142,7 @@
             this.gustLabel.AutoSize = true;
             this.gustLabel.Location = new System.Drawing.Point(292, 180);
             this.gustLabel.Name = "gustLabel";
-            this.gustLabel.Size = new System.Drawing.Size(29, 13);
+            this.gustLabel.Size = new System.Drawing.Size(32, 15);
             this.gustLabel.TabIndex = 12;
             this.gustLabel.Text = "Gust";
             // 
@@ -162,7 +165,7 @@
             this.waveHeightLabel.AutoSize = true;
             this.waveHeightLabel.Location = new System.Drawing.Point(12, 246);
             this.waveHeightLabel.Name = "waveHeightLabel";
-            this.waveHeightLabel.Size = new System.Drawing.Size(70, 13);
+            this.waveHeightLabel.Size = new System.Drawing.Size(76, 15);
             this.waveHeightLabel.TabIndex = 15;
             this.waveHeightLabel.Text = "Wave Height";
             // 
@@ -171,7 +174,7 @@
             this.seaSurfaceTempLabel.AutoSize = true;
             this.seaSurfaceTempLabel.Location = new System.Drawing.Point(292, 246);
             this.seaSurfaceTempLabel.Name = "seaSurfaceTempLabel";
-            this.seaSurfaceTempLabel.Size = new System.Drawing.Size(129, 13);
+            this.seaSurfaceTempLabel.Size = new System.Drawing.Size(148, 15);
             this.seaSurfaceTempLabel.TabIndex = 16;
             this.seaSurfaceTempLabel.Text = "Sea Surface Temperature";
             // 
@@ -195,9 +198,9 @@
             // timeZoneLabel
             // 
             this.timeZoneLabel.AutoSize = true;
-            this.timeZoneLabel.Location = new System.Drawing.Point(261, 58);
+            this.timeZoneLabel.Location = new System.Drawing.Point(258, 80);
             this.timeZoneLabel.Name = "timeZoneLabel";
-            this.timeZoneLabel.Size = new System.Drawing.Size(58, 13);
+            this.timeZoneLabel.Size = new System.Drawing.Size(66, 15);
             this.timeZoneLabel.TabIndex = 19;
             this.timeZoneLabel.Text = "Time Zone";
             // 
@@ -206,7 +209,7 @@
             this.fahrenheitCheckBox.AutoSize = true;
             this.fahrenheitCheckBox.Location = new System.Drawing.Point(15, 295);
             this.fahrenheitCheckBox.Name = "fahrenheitCheckBox";
-            this.fahrenheitCheckBox.Size = new System.Drawing.Size(76, 17);
+            this.fahrenheitCheckBox.Size = new System.Drawing.Size(88, 19);
             this.fahrenheitCheckBox.TabIndex = 20;
             this.fahrenheitCheckBox.Text = "Fahrenheit";
             this.fahrenheitCheckBox.UseVisualStyleBackColor = true;
@@ -217,17 +220,36 @@
             this.knotsCheckBox.AutoSize = true;
             this.knotsCheckBox.Location = new System.Drawing.Point(15, 319);
             this.knotsCheckBox.Name = "knotsCheckBox";
-            this.knotsCheckBox.Size = new System.Drawing.Size(53, 17);
+            this.knotsCheckBox.Size = new System.Drawing.Size(60, 19);
             this.knotsCheckBox.TabIndex = 21;
             this.knotsCheckBox.Text = "Knots";
             this.knotsCheckBox.UseVisualStyleBackColor = true;
             this.knotsCheckBox.CheckedChanged += new System.EventHandler(this.knotsCheckBox_CheckedChanged);
+            // 
+            // buoyLabel
+            // 
+            this.buoyLabel.AutoSize = true;
+            this.buoyLabel.Location = new System.Drawing.Point(12, 44);
+            this.buoyLabel.Name = "buoyLabel";
+            this.buoyLabel.Size = new System.Drawing.Size(84, 15);
+            this.buoyLabel.TabIndex = 23;
+            this.buoyLabel.Text = "Buoy Identifier";
+            // 
+            // buoyIdentifier
+            // 
+            this.buoyIdentifier.FormattingEnabled = true;
+            this.buoyIdentifier.Location = new System.Drawing.Point(15, 20);
+            this.buoyIdentifier.Name = "buoyIdentifier";
+            this.buoyIdentifier.Size = new System.Drawing.Size(121, 21);
+            this.buoyIdentifier.TabIndex = 24;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 453);
+            this.Controls.Add(this.buoyIdentifier);
+            this.Controls.Add(this.buoyLabel);
             this.Controls.Add(this.knotsCheckBox);
             this.Controls.Add(this.fahrenheitCheckBox);
             this.Controls.Add(this.timeZoneLabel);
@@ -250,6 +272,7 @@
             this.Controls.Add(this.getDataButton);
             this.Name = "Form1";
             this.Text = "Buoy Info";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -277,6 +300,9 @@
         private System.Windows.Forms.Label timeZoneLabel;
         private System.Windows.Forms.CheckBox fahrenheitCheckBox;
         private System.Windows.Forms.CheckBox knotsCheckBox;
+        private System.Windows.Forms.HelpProvider helpProvider1;
+        private System.Windows.Forms.Label buoyLabel;
+        private System.Windows.Forms.ComboBox buoyIdentifier;
     }
 }
 
