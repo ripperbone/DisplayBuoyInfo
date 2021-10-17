@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -133,7 +134,17 @@ namespace DisplayBuoyInfo
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            buoyIdentifier.DataSource = new List<string> { "45007", "46029", "41064"};
+            if (ConfigurationManager.AppSettings["buoyIdentifiers"] != null)
+            {
+                buoyIdentifier.DataSource = ConfigurationManager.AppSettings["buoyIdentifiers"].Split(',');
+            } else {
+                MessageBox.Show("No buoy identifiers defined in app config!");
+                buoyIdentifier.DataSource = new List<String>();
+            }
+        }
+
+        private void buoyIdentifier_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
         }
     }
