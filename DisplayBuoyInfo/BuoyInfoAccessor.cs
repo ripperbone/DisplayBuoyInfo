@@ -343,7 +343,9 @@ namespace DisplayBuoyInfo
 
   
             string url = string.Format("http://www.ndbc.noaa.gov/data/5day2/{0}_5day.txt", buoyId);
-             
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             return Task.Run(() =>
             {
                 try
