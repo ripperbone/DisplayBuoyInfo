@@ -9,33 +9,38 @@ using System.Threading.Tasks;
 
 namespace DisplayBuoyInfo
 {
-    class BuoyInfoAccessor
+    public class BuoyInfoAccessor
     {
 
         private List<BuoyInfo> _buoyDataList;
         private int _currentDataItem;
         private static string _tempFilePath;
 
-        public string METERS_PER_SECOND = "m/s";
-        public string METERS = "meters";
-        public char CELSIUS = 'C';
-        public char FAHRENHEIT = 'F';
-        public string KNOTS = "knots";
-        public float MAX_FLOAT_VALUE = 10000;
-        public int MAX_INT_VALUE = 10000;
+        public static string METERS_PER_SECOND = "m/s";
+        public static string METERS = "meters";
+        public static char CELSIUS = 'C';
+        public static char FAHRENHEIT = 'F';
+        public static string KNOTS = "knots";
+        public static float MAX_FLOAT_VALUE = 10000;
+        public static int MAX_INT_VALUE = 10000;
 
         public BuoyInfoAccessor()
         {
             _tempFilePath = Path.Combine(Path.GetTempPath(), "Buoy_Data.txt");
-            FetchData();
 
         }
+
         public void FetchData()
         {
             // try to get the buoy info if we have it saved in temp, otherwise hitting get data will 
             // download the file
             _buoyDataList = getBuoyInfo();
             _currentDataItem = 0;
+        }
+
+        public void SetBuoyData(List<BuoyInfo> buoyData)
+        {
+            _buoyDataList = buoyData;
         }
 
         public bool NextDataItem()
@@ -77,13 +82,6 @@ namespace DisplayBuoyInfo
             get { return (_buoyDataList == null ? false : (_buoyDataList.Count > 0)); }
         }
 
-        private BuoyInfo CurrentInfo
-        {
-            get { return (_buoyDataList[_currentDataItem]);  }
-        }
-
-
-
         public String TimeZoneName()
         {
             return TimeZone.CurrentTimeZone.StandardName;
@@ -92,15 +90,15 @@ namespace DisplayBuoyInfo
         public String Date()
         {
             // translate datetime into user's current timezone
-            return CurrentInfo.getDate().ToLocalTime().ToString();
+            return _buoyDataList[_currentDataItem].getDate().ToLocalTime().ToString();
         }
         
         public String WindDirection()
         {
-            // Return ? if the value was not provided in the data
+            // Return ? if the value was not provided in the data. Assume a value outside of 0...360 is missing.
 
-            int windDirection = CurrentInfo.getWindDirection();
-            if (windDirection < MAX_INT_VALUE) {
+            int windDirection = _buoyDataList[_currentDataItem].getWindDirection();
+            if (windDirection >= 0 && windDirection <= 360) {
                 
                 return String.Format("{0}°{1}", windDirection, determineCompassDirection(windDirection));
             } else {
@@ -110,7 +108,7 @@ namespace DisplayBuoyInfo
 
         public String WindSpeed(String unit)
         {
-            float windSpeed = CurrentInfo.getWindSpeed();
+            float windSpeed = _buoyDataList[_currentDataItem].getWindSpeed();
             if (windSpeed < MAX_FLOAT_VALUE) {
                 if (unit.Equals(KNOTS)){
                    return String.Format("{0} {1}", metersPerSecondToKnots(windSpeed), unit);
@@ -126,7 +124,7 @@ namespace DisplayBuoyInfo
 
         public String Gust(String unit)
         {
-            float gust = CurrentInfo.getGust();
+            float gust = _buoyDataList[_currentDataItem].getGust();
             if (gust < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(KNOTS))
@@ -150,7 +148,7 @@ namespace DisplayBuoyInfo
 
         public String WaveHeight(String unit)
         {
-            float waveHeight = CurrentInfo.getWaveHeight();
+            float waveHeight = _buoyDataList[_currentDataItem].getWaveHeight();
             if (waveHeight < MAX_FLOAT_VALUE)
             {
                 if (!unit.Equals(METERS))
@@ -172,7 +170,7 @@ namespace DisplayBuoyInfo
 
         public String AirTemp(char unit)
         {
-            float airTemp = CurrentInfo.getAirTemp();
+            float airTemp = _buoyDataList[_currentDataItem].getAirTemp();
             if (airTemp < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(FAHRENHEIT)) {
@@ -189,7 +187,7 @@ namespace DisplayBuoyInfo
 
         public String SeaSurfaceTemp(char unit)
         {
-            float seaSurfaceTemp = CurrentInfo.getSeaSurfaceTemp();
+            float seaSurfaceTemp = _buoyDataList[_currentDataItem].getSeaSurfaceTemp();
             if (seaSurfaceTemp < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(FAHRENHEIT)) {
@@ -212,16 +210,17 @@ namespace DisplayBuoyInfo
             {
                 return "E";
             }
-            else if (windDirection > 135 && windDirection < 215)
+            else if (windDirection > 135 && windDirection < 225)
             {
                 return "S";
             }
             else if (windDirection >= 225 && windDirection <= 315)
             {
-               return "W";
+                return "W";
             }
             else
             {
+                // 316...360 0...45
                 return "N";
             }
         }

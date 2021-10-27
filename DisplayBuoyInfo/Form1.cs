@@ -25,6 +25,7 @@ namespace DisplayBuoyInfo
             InitializeComponent();
 
             _buoyData = new BuoyInfoAccessor();
+            _buoyData.FetchData(); // read the buoy data from the file if the file exists
 
             if (_buoyData.HasData)
             {
@@ -41,11 +42,11 @@ namespace DisplayBuoyInfo
             timeZoneLabel.Text = _buoyData.TimeZoneName();
             dateBox.Text = _buoyData.Date();
             windDirectionBox.Text = _buoyData.WindDirection();
-            windSpeedBox.Text = _buoyData.WindSpeed(knotsCheckBox.Checked ? _buoyData.KNOTS : _buoyData.METERS_PER_SECOND);
-            gustBox.Text = _buoyData.Gust(knotsCheckBox.Checked ? _buoyData.KNOTS : _buoyData.METERS_PER_SECOND);
-            waveHeightBox.Text = _buoyData.WaveHeight(_buoyData.METERS);
-            AirTempBox.Text = _buoyData.AirTemp(fahrenheitCheckBox.Checked ? _buoyData.FAHRENHEIT : _buoyData.CELSIUS);
-            seaSurfaceTempBox.Text = _buoyData.SeaSurfaceTemp(fahrenheitCheckBox.Checked ? _buoyData.FAHRENHEIT : _buoyData.CELSIUS);
+            windSpeedBox.Text = _buoyData.WindSpeed(knotsCheckBox.Checked ? BuoyInfoAccessor.KNOTS : BuoyInfoAccessor.METERS_PER_SECOND);
+            gustBox.Text = _buoyData.Gust(knotsCheckBox.Checked ? BuoyInfoAccessor.KNOTS : BuoyInfoAccessor.METERS_PER_SECOND);
+            waveHeightBox.Text = _buoyData.WaveHeight(BuoyInfoAccessor.METERS);
+            AirTempBox.Text = _buoyData.AirTemp(fahrenheitCheckBox.Checked ? BuoyInfoAccessor.FAHRENHEIT : BuoyInfoAccessor.CELSIUS);
+            seaSurfaceTempBox.Text = _buoyData.SeaSurfaceTemp(fahrenheitCheckBox.Checked ? BuoyInfoAccessor.FAHRENHEIT : BuoyInfoAccessor.CELSIUS);
 
         }
 
