@@ -23,6 +23,30 @@ namespace DisplayBuoyInfoTest
         }
 
         [TestMethod]
+        public void TestNextDataItem()
+        {
+            BuoyInfoAccessor buoyInfoAccessor = new BuoyInfoAccessor();
+            Assert.IsFalse(buoyInfoAccessor.NextDataItem());
+
+            buoyInfoAccessor.SetBuoyData(new List<BuoyInfo>() { new BuoyInfo() });
+            Assert.IsFalse(buoyInfoAccessor.NextDataItem());
+
+        }
+
+        [TestMethod]
+        public void TestPreviousDataItem()
+        {
+            BuoyInfoAccessor buoyInfoAccessor = new BuoyInfoAccessor();
+            Assert.IsFalse(buoyInfoAccessor.PreviousDataItem());
+
+            buoyInfoAccessor.SetBuoyData(new List<BuoyInfo>() { new BuoyInfo(), new BuoyInfo() });
+            Assert.IsTrue(buoyInfoAccessor.NextDataItem());
+            Assert.IsFalse(buoyInfoAccessor.NextDataItem()); // no more next items in list of data
+            Assert.IsTrue(buoyInfoAccessor.PreviousDataItem());
+            Assert.IsFalse(buoyInfoAccessor.PreviousDataItem()); // no more previous items in list of data
+        }
+
+        [TestMethod]
         public void TestDate()
         {
             DateTime expectedDate = new DateTime(2021, 10, 26, 15, 51, 0);
