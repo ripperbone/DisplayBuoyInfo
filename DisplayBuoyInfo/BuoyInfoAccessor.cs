@@ -14,7 +14,6 @@ namespace DisplayBuoyInfo
 
         private List<BuoyInfo> _buoyDataList;
         private int _currentDataItem;
-        private static string _tempFilePath;
 
         public static string METERS_PER_SECOND = "m/s";
         public static string METERS = "meters";
@@ -26,21 +25,19 @@ namespace DisplayBuoyInfo
 
         public BuoyInfoAccessor()
         {
-            _tempFilePath = Path.Combine(Path.GetTempPath(), "Buoy_Data.txt");
-
         }
 
-        public void FetchData()
+        public void FetchData(string buoyId)
         {
             // try to get the buoy info if we have it saved in temp, otherwise hitting get data will 
             // download the file
-            _buoyDataList = getBuoyInfo();
+            _buoyDataList = getBuoyInfo(buoyId);
             _currentDataItem = 0;
         }
 
-        public void SetBuoyData(List<BuoyInfo> buoyData)
+        public void SetBuoyData(List<BuoyInfo> buoyDataList)
         {
-            _buoyDataList = buoyData;
+            _buoyDataList = buoyDataList;
         }
 
         public bool NextDataItem()
@@ -82,18 +79,18 @@ namespace DisplayBuoyInfo
             get { return (_buoyDataList == null ? false : (_buoyDataList.Count > 0)); }
         }
 
-        public String TimeZoneName()
+        public string TimeZoneName()
         {
             return TimeZone.CurrentTimeZone.StandardName;
         }
 
-        public String Date()
+        public string Date()
         {
             // translate datetime into user's current timezone
             return _buoyDataList[_currentDataItem].getDate().ToLocalTime().ToString();
         }
         
-        public String WindDirection()
+        public string WindDirection()
         {
             // Return ? if the value was not provided in the data. Assume a value outside of 0...360 is missing.
 
@@ -106,7 +103,7 @@ namespace DisplayBuoyInfo
             }
         }
 
-        public String WindSpeed(String unit)
+        public string WindSpeed(string unit)
         {
             float windSpeed = _buoyDataList[_currentDataItem].getWindSpeed();
             if (windSpeed < MAX_FLOAT_VALUE) {
@@ -122,7 +119,7 @@ namespace DisplayBuoyInfo
             }
         }
 
-        public String Gust(String unit)
+        public string Gust(string unit)
         {
             float gust = _buoyDataList[_currentDataItem].getGust();
             if (gust < MAX_FLOAT_VALUE)
@@ -146,7 +143,7 @@ namespace DisplayBuoyInfo
             }
         }
 
-        public String WaveHeight(String unit)
+        public string WaveHeight(string unit)
         {
             float waveHeight = _buoyDataList[_currentDataItem].getWaveHeight();
             if (waveHeight < MAX_FLOAT_VALUE)
@@ -168,7 +165,7 @@ namespace DisplayBuoyInfo
         }
 
 
-        public String AirTemp(char unit)
+        public string AirTemp(char unit)
         {
             float airTemp = _buoyDataList[_currentDataItem].getAirTemp();
             if (airTemp < MAX_FLOAT_VALUE)
@@ -185,7 +182,7 @@ namespace DisplayBuoyInfo
             }
         }
 
-        public String SeaSurfaceTemp(char unit)
+        public string SeaSurfaceTemp(char unit)
         {
             float seaSurfaceTemp = _buoyDataList[_currentDataItem].getSeaSurfaceTemp();
             if (seaSurfaceTemp < MAX_FLOAT_VALUE)
@@ -202,7 +199,7 @@ namespace DisplayBuoyInfo
             }
         }
 
-        private String determineCompassDirection(int windDirection)
+        private string determineCompassDirection(int windDirection)
         {
             // wind direction is in degrees clockwise from North
 
@@ -237,9 +234,12 @@ namespace DisplayBuoyInfo
             return (System.Convert.ToSingle(Math.Round(System.Convert.ToDouble(metersPerSecond) * 1.9438, numOfDecimalPlaces)));
         }
 
-            
+        private string GetTempFilePath(string buoyId)
+        {
+            return Path.Combine(Path.GetTempPath(), String.Format("Buoy_Data_{0}.txt", buoyId));
+        }
 
-        private List<BuoyInfo> getBuoyInfo()
+        private List<BuoyInfo> getBuoyInfo(string buoyId)
         {
 
             List<BuoyInfo> buoyDataList = new List<BuoyInfo>();
@@ -247,7 +247,7 @@ namespace DisplayBuoyInfo
             StreamReader stream;
             try
             {
-                stream = new StreamReader(_tempFilePath);
+                stream = new StreamReader(GetTempFilePath(buoyId));
 
 
             }
@@ -258,9 +258,9 @@ namespace DisplayBuoyInfo
             }
 
 
-
-            string header1 = stream.ReadLine();
-            string header2 = stream.ReadLine();
+            // skip header lines
+            _ = stream.ReadLine();
+            _ = stream.ReadLine();
 
 
 
@@ -299,16 +299,16 @@ namespace DisplayBuoyInfo
                     count++;
                 }
 
-                int month = Int32.Parse(data[1]);
-                int day = Int32.Parse(data[2]);
-                int hour = Int32.Parse(data[3]);
-                int minute = Int32.Parse(data[4]);
-                int windDirection = Int32.Parse(data[5]);
-                float windSpeed = Single.Parse(data[6]);
-                float gust = Single.Parse(data[7]);
-                float waveHeight = Single.Parse(data[8]);
-                float airTemp = Single.Parse(data[13]);
-                float seaSurfaceTemp = Single.Parse(data[14]);
+                int month = int.Parse(data[1]);
+                int day = int.Parse(data[2]);
+                int hour = int.Parse(data[3]);
+                int minute = int.Parse(data[4]);
+                int windDirection = int.Parse(data[5]);
+                float windSpeed = float.Parse(data[6]);
+                float gust = float.Parse(data[7]);
+                float waveHeight = float.Parse(data[8]);
+                float airTemp = float.Parse(data[13]);
+                float seaSurfaceTemp = float.Parse(data[14]);
 
                 // get current year
                 DateTime now = DateTime.Now;
@@ -341,7 +341,7 @@ namespace DisplayBuoyInfo
             if (buoyId.Length != 5) throw new InvalidDataException();
 
   
-            string url = string.Format("http://www.ndbc.noaa.gov/data/5day2/{0}_5day.txt", buoyId);
+            string url = String.Format("http://www.ndbc.noaa.gov/data/5day2/{0}_5day.txt", buoyId);
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -350,7 +350,7 @@ namespace DisplayBuoyInfo
                 try
                 {              
                     WebClient web = new WebClient();
-                    web.DownloadFile(url, _tempFilePath);
+                    web.DownloadFile(url, GetTempFilePath(buoyId));
                 }
                 catch (WebException ex)
                 {

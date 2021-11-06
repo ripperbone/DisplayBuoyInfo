@@ -242,6 +242,7 @@
             this.buoyIdentifier.Name = "buoyIdentifier";
             this.buoyIdentifier.Size = new System.Drawing.Size(121, 21);
             this.buoyIdentifier.TabIndex = 24;
+            this.buoyIdentifier.SelectedIndexChanged += new System.EventHandler(this.buoyIdentifier_SelectedIndexChanged);
             // 
             // Form1
             // 

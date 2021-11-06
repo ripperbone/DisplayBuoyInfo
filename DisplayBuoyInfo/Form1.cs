@@ -22,16 +22,14 @@ namespace DisplayBuoyInfo
 
         public Form1()
         {
-            InitializeComponent();
-
             _buoyData = new BuoyInfoAccessor();
-            _buoyData.FetchData(); // read the buoy data from the file if the file exists
+            InitializeComponent();
+        }
 
-            if (_buoyData.HasData)
-            {
-                setDataOnForm();
-            }
-
+        public Form1(BuoyInfoAccessor buoyInfoAccessor)
+        {
+            _buoyData = buoyInfoAccessor;
+            InitializeComponent();
         }
 
 
@@ -50,6 +48,14 @@ namespace DisplayBuoyInfo
 
         }
 
+        private void resetDataOnForm()
+        {
+            foreach (var e in new List<Control>() { timeZoneLabel, dateBox, windDirectionBox, windSpeedBox, gustBox, waveHeightBox, AirTempBox, seaSurfaceTempBox })
+            {
+                e.Text = null;
+            }
+        }
+
 
 
 
@@ -58,12 +64,12 @@ namespace DisplayBuoyInfo
  
             await _buoyData.DownloadFileAsync(buoyIdentifier.Text);
 
-            _buoyData.FetchData();
+            _buoyData.FetchData(buoyIdentifier.Text);
 
             if (_buoyData.HasData)
             {
                 setDataOnForm();
-                MessageBox.Show(string.Format("Retrieved data for buoy {0}.", buoyIdentifier.Text));
+                MessageBox.Show(String.Format("Retrieved data for buoy {0}.", buoyIdentifier.Text));
 
             }
             else
@@ -135,17 +141,30 @@ namespace DisplayBuoyInfo
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (ConfigurationManager.AppSettings["buoyIdentifiers"] != null)
-            {
+            if (ConfigurationManager.AppSettings["buoyIdentifiers"] != null) {
                 buoyIdentifier.DataSource = ConfigurationManager.AppSettings["buoyIdentifiers"].Split(',');
             } else {
-                MessageBox.Show("No buoy identifiers defined in app config!");
-                buoyIdentifier.DataSource = new List<String>();
+                buoyIdentifier.DataSource = new List<string>();
             }
         }
 
         private void buoyIdentifier_SelectedIndexChanged(object sender, EventArgs e)
         {
+
+            if (buoyIdentifier != null && buoyIdentifier.Text != null)
+            {
+
+                _buoyData.FetchData(buoyIdentifier.Text); // read the buoy data from the file if the file exists
+
+                // set the data on the form if it has been retrieved already or reset form fields to empty
+                if (_buoyData.HasData)
+                {
+                    setDataOnForm();
+                } else
+                {
+                    resetDataOnForm();
+                }
+            }
 
         }
     }
