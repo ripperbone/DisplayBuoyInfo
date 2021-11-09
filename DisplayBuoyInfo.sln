@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisplayBuoyInfo", "DisplayBuoyInfo\DisplayBuoyInfo.csproj", "{99B68A4E-29BC-403E-9E07-D208FC02352E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisplayBuoyInfoTest", "DisplayBuoyInfoTest\DisplayBuoyInfoTest.csproj", "{29871FB8-CA82-4566-8F48-C5B821C1DCE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisplayBuoyInfoTest", "DisplayBuoyInfoTest\DisplayBuoyInfoTest.csproj", "{29871FB8-CA82-4566-8F48-C5B821C1DCE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuoyInfoFunction", "BuoyInfoFunction\BuoyInfoFunction.csproj", "{17B517B2-EDCE-4675-9BC1-D3E4C78348D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{29871FB8-CA82-4566-8F48-C5B821C1DCE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29871FB8-CA82-4566-8F48-C5B821C1DCE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29871FB8-CA82-4566-8F48-C5B821C1DCE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17B517B2-EDCE-4675-9BC1-D3E4C78348D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17B517B2-EDCE-4675-9BC1-D3E4C78348D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17B517B2-EDCE-4675-9BC1-D3E4C78348D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17B517B2-EDCE-4675-9BC1-D3E4C78348D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
