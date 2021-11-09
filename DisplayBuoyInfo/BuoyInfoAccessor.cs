@@ -87,14 +87,14 @@ namespace DisplayBuoyInfo
         public string Date()
         {
             // translate datetime into user's current timezone
-            return _buoyDataList[_currentDataItem].getDate().ToLocalTime().ToString();
+            return _buoyDataList[_currentDataItem].GetDate().ToLocalTime().ToString();
         }
         
         public string WindDirection()
         {
             // Return ? if the value was not provided in the data. Assume a value outside of 0...360 is missing.
 
-            int windDirection = _buoyDataList[_currentDataItem].getWindDirection();
+            int windDirection = _buoyDataList[_currentDataItem].GetWindDirection();
             if (windDirection >= 0 && windDirection <= 360) {
                 
                 return String.Format("{0}°{1}", windDirection, determineCompassDirection(windDirection));
@@ -105,7 +105,7 @@ namespace DisplayBuoyInfo
 
         public string WindSpeed(string unit)
         {
-            float windSpeed = _buoyDataList[_currentDataItem].getWindSpeed();
+            float windSpeed = _buoyDataList[_currentDataItem].GetWindSpeed();
             if (windSpeed < MAX_FLOAT_VALUE) {
                 if (unit.Equals(KNOTS)){
                    return String.Format("{0} {1}", metersPerSecondToKnots(windSpeed), unit);
@@ -121,7 +121,7 @@ namespace DisplayBuoyInfo
 
         public string Gust(string unit)
         {
-            float gust = _buoyDataList[_currentDataItem].getGust();
+            float gust = _buoyDataList[_currentDataItem].GetGust();
             if (gust < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(KNOTS))
@@ -145,7 +145,7 @@ namespace DisplayBuoyInfo
 
         public string WaveHeight(string unit)
         {
-            float waveHeight = _buoyDataList[_currentDataItem].getWaveHeight();
+            float waveHeight = _buoyDataList[_currentDataItem].GetWaveHeight();
             if (waveHeight < MAX_FLOAT_VALUE)
             {
                 if (!unit.Equals(METERS))
@@ -167,7 +167,7 @@ namespace DisplayBuoyInfo
 
         public string AirTemp(char unit)
         {
-            float airTemp = _buoyDataList[_currentDataItem].getAirTemp();
+            float airTemp = _buoyDataList[_currentDataItem].GetAirTemp();
             if (airTemp < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(FAHRENHEIT)) {
@@ -184,7 +184,7 @@ namespace DisplayBuoyInfo
 
         public string SeaSurfaceTemp(char unit)
         {
-            float seaSurfaceTemp = _buoyDataList[_currentDataItem].getSeaSurfaceTemp();
+            float seaSurfaceTemp = _buoyDataList[_currentDataItem].GetSeaSurfaceTemp();
             if (seaSurfaceTemp < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(FAHRENHEIT)) {

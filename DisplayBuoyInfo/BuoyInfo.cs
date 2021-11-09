@@ -71,40 +71,40 @@ namespace DisplayBuoyInfo {
         }
 
 
-        public DateTime getDate()
+        public DateTime GetDate()
         {
             return _date;
         }
 
 
-        public int getWindDirection()
+        public int GetWindDirection()
         {
             return _windDirection;
         }
 
-        public float getWindSpeed()
+        public float GetWindSpeed()
         {
             return _windSpeed;
         }
 
-        public float getGust()
+        public float GetGust()
         {
             return _gust;
         }
 
 
-        public float getWaveHeight()
+        public float GetWaveHeight()
         {
             return _waveHeight;
         }
 
 
-        public float getAirTemp()
+        public float GetAirTemp()
         {
             return _airTemp;
         }
 
-        public float getSeaSurfaceTemp()
+        public float GetSeaSurfaceTemp()
         {
             return _seaSurfaceTemp;
         }
