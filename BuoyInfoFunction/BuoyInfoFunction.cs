@@ -7,8 +7,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Azure.WebJobs.Extensions.SendGrid;
 using Microsoft.Extensions.Logging;
 using ScottPlot;
+using SendGrid.Helpers.Mail;
+
 
 namespace BuoyInfoFunction
 {
@@ -19,7 +22,9 @@ namespace BuoyInfoFunction
         public static int MAX_INT_VALUE = 10000;
 
         [FunctionName("BuoyInfoFunction")]
-        public static void Run([TimerTrigger("0 0 2 * * *")]TimerInfo myTimer, ILogger log)
+        public static void Run([TimerTrigger("0 0 2 * * *")]TimerInfo myTimer,
+            [SendGrid(ApiKey="SendGridAPIKey")] out SendGridMessage sendGridMessage,
+            ILogger log)
         {
           
 
@@ -32,13 +37,33 @@ namespace BuoyInfoFunction
 
             log.LogInformation($"Buoy info contains {buoyInfo.Count} items");
 
-            string fileLocation = Path.Combine(Path.GetTempPath(), String.Format("Wind_Speed_Graph_{0}.png", buoyId));
+            string fileName = String.Format("Wind_Speed_Graph_{0}.png", buoyId);
+            string fileLocation = Path.Combine(Path.GetTempPath(), fileName);
 
             log.LogInformation($"Saving graph to file: {fileLocation}");
             GraphBuoyInfo(buoyInfo, fileLocation);
             log.LogInformation("Done graphing");
 
-            
+            sendGridMessage = new SendGridMessage();
+
+            string ToAddress = System.Environment.GetEnvironmentVariable("EMAIL_TO_ADDRESS");
+            string FromAddress = System.Environment.GetEnvironmentVariable("EMAIL_FROM_ADDRESS");
+            string FromName = System.Environment.GetEnvironmentVariable("EMAIL_FROM_NAME");
+
+            if (ToAddress == null || FromAddress == null || FromName == null)
+            {
+                log.LogInformation("Missing email configuration");
+                return; // do not continue if unable to get configuration
+            }
+
+            sendGridMessage.SetFrom(new EmailAddress(FromAddress, FromName));
+            sendGridMessage.AddTo(ToAddress);
+            sendGridMessage.SetSubject("Buoy Info");
+            sendGridMessage.AddContent("text/plain", "Attachment: wind speed graph");
+
+            byte[] bytes = File.ReadAllBytes(fileLocation);
+
+            sendGridMessage.AddAttachment(fileName, Convert.ToBase64String(bytes));
         }
 
         private static void GraphBuoyInfo(List<BuoyInfo> buoyInfo, string fileLocation)
