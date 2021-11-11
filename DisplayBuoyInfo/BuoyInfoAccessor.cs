@@ -31,7 +31,7 @@ namespace DisplayBuoyInfo
         {
             // try to get the buoy info if we have it saved in temp, otherwise hitting get data will 
             // download the file
-            _buoyDataList = getBuoyInfo(buoyId);
+            _buoyDataList = GetBuoyInfo(GetTempFilePath(buoyId));
             _currentDataItem = 0;
         }
 
@@ -76,7 +76,7 @@ namespace DisplayBuoyInfo
 
         public bool HasData
         {
-            get { return (_buoyDataList == null ? false : (_buoyDataList.Count > 0)); }
+            get { return _buoyDataList != null && _buoyDataList.Count > 0; }
         }
 
         public string TimeZoneName()
@@ -97,7 +97,7 @@ namespace DisplayBuoyInfo
             int windDirection = _buoyDataList[_currentDataItem].GetWindDirection();
             if (windDirection >= 0 && windDirection <= 360) {
                 
-                return String.Format("{0}°{1}", windDirection, determineCompassDirection(windDirection));
+                return String.Format("{0}°{1}", windDirection, DetermineCompassDirection(windDirection));
             } else {
                 return "?";
             }
@@ -108,7 +108,7 @@ namespace DisplayBuoyInfo
             float windSpeed = _buoyDataList[_currentDataItem].GetWindSpeed();
             if (windSpeed < MAX_FLOAT_VALUE) {
                 if (unit.Equals(KNOTS)){
-                   return String.Format("{0} {1}", metersPerSecondToKnots(windSpeed), unit);
+                   return String.Format("{0} {1}", MetersPerSecondToKnots(windSpeed), unit);
                 } else if (unit.Equals(METERS_PER_SECOND)) {
                     return String.Format("{0} {1}", windSpeed, unit);
                 } else {
@@ -126,7 +126,7 @@ namespace DisplayBuoyInfo
             {
                 if (unit.Equals(KNOTS))
                 {
-                    return String.Format("{0} {1}", metersPerSecondToKnots(gust), unit);
+                    return String.Format("{0} {1}", MetersPerSecondToKnots(gust), unit);
                 }
                 else if (unit.Equals(METERS_PER_SECOND))
                 {
@@ -171,7 +171,7 @@ namespace DisplayBuoyInfo
             if (airTemp < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(FAHRENHEIT)) {
-                    return String.Format("{0}°{1}", celsiusToFahrenheit(airTemp), unit);
+                    return String.Format("{0}°{1}", CelsiusToFahrenheit(airTemp), unit);
                 } else if (unit.Equals(CELSIUS)) {
                     return String.Format("{0}°{1}", airTemp, unit);
                 } else {
@@ -188,7 +188,7 @@ namespace DisplayBuoyInfo
             if (seaSurfaceTemp < MAX_FLOAT_VALUE)
             {
                 if (unit.Equals(FAHRENHEIT)) {
-                    return String.Format("{0}°{1}", celsiusToFahrenheit(seaSurfaceTemp), unit);
+                    return String.Format("{0}°{1}", CelsiusToFahrenheit(seaSurfaceTemp), unit);
                 } else if (unit.Equals(CELSIUS)) {
                     return String.Format("{0}°{1}", seaSurfaceTemp, unit);
                 } else {
@@ -199,7 +199,7 @@ namespace DisplayBuoyInfo
             }
         }
 
-        private string determineCompassDirection(int windDirection)
+        private string DetermineCompassDirection(int windDirection)
         {
             // wind direction is in degrees clockwise from North
 
@@ -222,34 +222,31 @@ namespace DisplayBuoyInfo
             }
         }
 
-        private float celsiusToFahrenheit(float celsius)
+        private float CelsiusToFahrenheit(float celsius)
         {
             return ((celsius * 9 / 5) + 32);
 
         }
 
-        private float metersPerSecondToKnots(float metersPerSecond)
+        private float MetersPerSecondToKnots(float metersPerSecond)
         {
             int numOfDecimalPlaces = 1;
             return (System.Convert.ToSingle(Math.Round(System.Convert.ToDouble(metersPerSecond) * 1.9438, numOfDecimalPlaces)));
         }
 
-        private string GetTempFilePath(string buoyId)
+        public string GetTempFilePath(string buoyId)
         {
             return Path.Combine(Path.GetTempPath(), String.Format("Buoy_Data_{0}.txt", buoyId));
         }
 
-        private List<BuoyInfo> getBuoyInfo(string buoyId)
+        public List<BuoyInfo> GetBuoyInfo(string filePath)
         {
-
             List<BuoyInfo> buoyDataList = new List<BuoyInfo>();
 
             StreamReader stream;
             try
             {
-                stream = new StreamReader(GetTempFilePath(buoyId));
-
-
+                stream = new StreamReader(filePath);
             }
             catch (FileNotFoundException)
             {
@@ -257,9 +254,28 @@ namespace DisplayBuoyInfo
                 return buoyDataList;
             }
 
+            // check data in file is in expected order
+            string[] header = Regex.Replace(stream.ReadLine().Substring(1), @"\s+", ",").Split(',');
 
-            // skip header lines
-            _ = stream.ReadLine();
+            List<string> fields = new List<string>() {
+                "YY", "MM", "DD", "hh", "mm", "WDIR", "WSPD", "GST", "WVHT", "DPD", "APD", "MWD", "PRES", "ATMP", "WTMP", "DEWP", "VIS", "PTDY", "TIDE"};
+
+            if (header.Length != fields.Count)
+            {
+                Console.WriteLine($"Unexpected number of fields in the file: {header.Length}");
+                return buoyDataList;
+            }
+
+            for (int i = 0; i < fields.Count; i++)
+            {
+                if (!fields[i].Equals(header[i]))
+                {
+                    Console.WriteLine($"Unexpected field: {header[i]}");
+                    return buoyDataList;
+                }
+            }
+
+            // skip the next header line
             _ = stream.ReadLine();
 
 

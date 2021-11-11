@@ -106,8 +106,28 @@ namespace BuoyInfoFunction
             }
 
 
-            // skip header lines
-            _ = stream.ReadLine();
+            // check data in file is in expected order
+            string[] header = Regex.Replace(stream.ReadLine().Substring(1), @"\s+", ",").Split(',');
+
+            List<string> fields = new List<string>() {
+                "YY", "MM", "DD", "hh", "mm", "WDIR", "WSPD", "GST", "WVHT", "DPD", "APD", "MWD", "PRES", "ATMP", "WTMP", "DEWP", "VIS", "PTDY", "TIDE"};
+
+            if (header.Length != fields.Count)
+            {
+                Console.WriteLine($"Unexpected number of fields in the file: {header.Length}");
+                return buoyDataList;
+            }
+
+            for (int i = 0; i < fields.Count; i++)
+            {
+                if (!fields[i].Equals(header[i]))
+                {
+                    Console.WriteLine($"Unexpected field: {header[i]}");
+                    return buoyDataList;
+                }
+            }
+
+            // skip the next header line
             _ = stream.ReadLine();
 
 

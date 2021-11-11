@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DisplayBuoyInfo;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 namespace DisplayBuoyInfoTest
 {
@@ -193,6 +194,62 @@ namespace DisplayBuoyInfoTest
             buoyInfoAccessor.NextDataItem();
             Assert.AreEqual("?", buoyInfoAccessor.SeaSurfaceTemp(BuoyInfoAccessor.CELSIUS));
 
+        }
+
+        [TestMethod]
+        public void TestFetchData()
+        {
+            string filePath = GetTempFilePath();
+
+            string[] fileTextLines =
+            {
+                "#YY  MM DD hh mm WDIR WSPD GST  WVHT   DPD   APD MWD   PRES  ATMP  WTMP  DEWP  VIS PTDY  TIDE",
+                "#yr  mo dy hr mn degT m/s  m/s     m   sec   sec degT   hPa  degC  degC  degC  nmi  hPa    ft",
+                "2021 11 11 05 40 130 11.0 13.0   1.6    MM   4.3 118 1010.7  12.6  13.0  10.1   MM   MM    MM",
+                "2021 11 11 05 30 120 10.0 12.0    MM    MM    MM  MM 1010.7  12.5  13.0  10.0   MM   MM    MM"
+            };
+
+
+            File.WriteAllLinesAsync(filePath, fileTextLines).Wait();
+
+            BuoyInfoAccessor buoyInfoAccessor = new BuoyInfoAccessor();
+            List<BuoyInfo> buoyInfo = buoyInfoAccessor.GetBuoyInfo(filePath);
+            Assert.AreEqual(2, buoyInfo.Count);
+            Assert.AreEqual(BuoyInfoAccessor.MAX_FLOAT_VALUE, buoyInfo[1].GetWaveHeight());
+
+            // Catch if file data is out of order
+
+            string[] outOfOrderFileTextLines =
+            {
+                "#YY  MM DD hh mm WSPD WDIR GST  WVHT   DPD   APD MWD   PRES  ATMP  WTMP  DEWP  VIS PTDY  TIDE",
+                "#yr  mo dy hr mn degT m/s  m/s     m   sec   sec degT   hPa  degC  degC  degC  nmi  hPa    ft",
+                "2021 11 11 05 40 11.0 130 13.0   1.6    MM   4.3 118 1010.7  12.6  13.0  10.1   MM   MM    MM",
+                "2021 11 11 05 30 10.0 120 12.0    MM    MM    MM  MM 1010.7  12.5  13.0  10.0   MM   MM    MM"
+            };
+
+            filePath = GetTempFilePath();
+            File.WriteAllLinesAsync(filePath, outOfOrderFileTextLines).Wait();
+            buoyInfo = buoyInfoAccessor.GetBuoyInfo(filePath);
+            Assert.AreEqual(0, buoyInfo.Count);
+
+            // Catch if the number of fields are different
+
+            string[] missingInfoFileTextLines =
+            {
+                "#YY  MM DD hh mm WSPD WDIR GST  WVHT   DPD   APD MWD   PRES  ATMP  WTMP  DEWP  VIS PTDY",
+                "#yr  mo dy hr mn degT m/s  m/s     m   sec   sec degT   hPa  degC  degC  degC  nmi  hPa",
+                "2021 11 11 05 40 11.0 130 13.0   1.6    MM   4.3 118 1010.7  12.6  13.0  10.1   MM   MM",
+                "2021 11 11 05 30 10.0 120 12.0    MM    MM    MM  MM 1010.7  12.5  13.0  10.0   MM   MM"
+            };
+            filePath = GetTempFilePath();
+            File.WriteAllLinesAsync(filePath, missingInfoFileTextLines).Wait();
+            buoyInfo = buoyInfoAccessor.GetBuoyInfo(filePath);
+            Assert.AreEqual(0, buoyInfo.Count);
+        }
+
+        private string GetTempFilePath()
+        {
+            return Path.Combine(Path.GetTempPath(), String.Format("{0}_{1}.txt", this.GetType().Name, Guid.NewGuid().ToString()));
         }
     }
 }
