@@ -37,13 +37,6 @@ namespace BuoyInfoFunction
 
             log.LogInformation($"Buoy info contains {buoyInfo.Count} items");
 
-            string fileName = String.Format("Wind_Speed_Graph_{0}.png", buoyId);
-            string fileLocation = Path.Combine(Path.GetTempPath(), fileName);
-
-            log.LogInformation($"Saving graph to file: {fileLocation}");
-            GraphBuoyInfo(buoyInfo, fileLocation);
-            log.LogInformation("Done graphing");
-
             sendGridMessage = new SendGridMessage();
 
             string ToAddress = System.Environment.GetEnvironmentVariable("EMAIL_TO_ADDRESS");
@@ -59,25 +52,36 @@ namespace BuoyInfoFunction
             sendGridMessage.SetFrom(new EmailAddress(FromAddress, FromName));
             sendGridMessage.AddTo(ToAddress);
             sendGridMessage.SetSubject("Buoy Info");
-            sendGridMessage.AddContent("text/plain", "Attachment: wind speed graph");
 
-            byte[] bytes = File.ReadAllBytes(fileLocation);
+            string fileName = String.Format("Wind_Speed_Graph_{0}.png", buoyId);
+            string fileLocation = Path.Combine(Path.GetTempPath(), fileName);
 
-            sendGridMessage.AddAttachment(fileName, Convert.ToBase64String(bytes));
+            List<BuoyInfo> buoyInfoToGraph = buoyInfo.Where(item => item.GetDate() > DateTime.UtcNow.AddDays(-1)).ToList();
+
+            if (buoyInfoToGraph.Count > 0)
+            {
+                log.LogInformation($"Saving graph to file: {fileLocation}");
+                GraphBuoyInfo(buoyInfoToGraph, fileLocation);
+                log.LogInformation("Done graphing");
+
+                sendGridMessage.AddContent("text/plain", "Attachment: wind speed graph");
+                byte[] bytes = File.ReadAllBytes(fileLocation);
+                sendGridMessage.AddAttachment(fileName, Convert.ToBase64String(bytes));
+            } else
+            {
+                sendGridMessage.AddContent("text/plain", "There is no data to graph.");
+            }
         }
 
         private static void GraphBuoyInfo(List<BuoyInfo> buoyInfo, string fileLocation)
         {
             TimeZoneInfo centralTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
 
-            double[] dataX = buoyInfo.Where(item => item.GetDate() > DateTime.UtcNow.AddDays(-1))
-               .Select(item => TimeZoneInfo.ConvertTimeFromUtc(item.GetDate(), centralTimeZone).ToOADate()).ToArray();
+            double[] dataX = buoyInfo.Select(item => TimeZoneInfo.ConvertTimeFromUtc(item.GetDate(), centralTimeZone).ToOADate()).ToArray();
 
-            double[] dataY_wind = buoyInfo.Where(item => item.GetDate() > DateTime.UtcNow.AddDays(-1))
-                .Select(item => Convert.ToDouble(MetersPerSecondToKnots(item.GetWindSpeed()))).ToArray();
+            double[] dataY_wind = buoyInfo.Select(item => Convert.ToDouble(MetersPerSecondToKnots(item.GetWindSpeed()))).ToArray();
 
-            double[] dataY_gust = buoyInfo.Where(item => item.GetDate() > DateTime.UtcNow.AddDays(-1))
-                .Select(item => Convert.ToDouble(MetersPerSecondToKnots(item.GetGust()))).ToArray();
+            double[] dataY_gust = buoyInfo.Select(item => Convert.ToDouble(MetersPerSecondToKnots(item.GetGust()))).ToArray();
 
             Plot plot = new Plot(1000, 500);
             plot.AddScatter(dataX, dataY_wind);
