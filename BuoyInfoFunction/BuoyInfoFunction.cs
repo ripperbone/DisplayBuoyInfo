@@ -56,7 +56,8 @@ namespace BuoyInfoFunction
             string fileName = String.Format("Wind_Speed_Graph_{0}.png", buoyId);
             string fileLocation = Path.Combine(Path.GetTempPath(), fileName);
 
-            List<BuoyInfo> buoyInfoToGraph = buoyInfo.Where(item => item.GetDate() > DateTime.UtcNow.AddDays(-1)).ToList();
+            List<BuoyInfo> buoyInfoToGraph = buoyInfo.Where(item => item.GetDate() > DateTime.UtcNow.AddDays(-1))
+                .Where(item => item.GetWindSpeed() < MAX_FLOAT_VALUE && item.GetGust() < MAX_FLOAT_VALUE).ToList();
 
             if (buoyInfoToGraph.Count > 0)
             {
