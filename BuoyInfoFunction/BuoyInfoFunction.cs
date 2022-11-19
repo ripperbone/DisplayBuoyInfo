@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Azure.WebJobs.Extensions.SendGrid;
 using Microsoft.Extensions.Logging;
 using ScottPlot;
 using SendGrid.Helpers.Mail;
@@ -216,20 +214,11 @@ namespace BuoyInfoFunction
 
             string url = String.Format("http://www.ndbc.noaa.gov/data/5day2/{0}_5day.txt", buoyId);
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
-                try
-                {
-                    WebClient web = new WebClient();
-                    web.DownloadFile(url, GetTempFilePath(buoyId));
-                }
-                catch (WebException ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    return;
-                }
+                HttpClient httpClient = new HttpClient();
+                byte[] fileBytes = await httpClient.GetByteArrayAsync(url);
+                File.WriteAllBytes(GetTempFilePath(buoyId), fileBytes);
             });
         }
 
