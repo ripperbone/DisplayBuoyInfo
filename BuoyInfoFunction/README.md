@@ -17,3 +17,9 @@ Create local.settings.json file with the following contents:
 ```
 
 Edit TimerTrigger so that `RunOnStartup = true`.
+
+### Deploying
+
+```
+func azure functionapp publish <FunctionName> --csharp
+```
