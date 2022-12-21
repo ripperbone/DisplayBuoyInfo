@@ -223,7 +223,7 @@ namespace BuoyInfoFunction
                 }
                 catch (HttpRequestException e)
                 {
-                    log.LogInformation("Could not download the file.", e);
+                    log.LogInformation("Could not download the file. Exception: {0}", e.Message);
                 }
 
                 if (fileBytes.Length > 0)
