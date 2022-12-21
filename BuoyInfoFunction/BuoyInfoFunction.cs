@@ -29,9 +29,9 @@ namespace BuoyInfoFunction
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             string buoyId = "45007";
-            DownloadFileAsync(buoyId).Wait();
+            DownloadFileAsync(buoyId, log).Wait();
 
-            List<BuoyInfo> buoyInfo = GetBuoyInfo(buoyId);
+            List<BuoyInfo> buoyInfo = GetBuoyInfo(buoyId, log);
 
             log.LogInformation($"Buoy info contains {buoyInfo.Count} items");
 
@@ -90,7 +90,7 @@ namespace BuoyInfoFunction
             plot.SaveFig(fileLocation);
         }
 
-        private static List<BuoyInfo> GetBuoyInfo(string buoyId)
+        private static List<BuoyInfo> GetBuoyInfo(string buoyId, ILogger log)
         {
 
             List<BuoyInfo> buoyDataList = new List<BuoyInfo>();
@@ -104,10 +104,9 @@ namespace BuoyInfoFunction
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("File could not be read.");
+                log.LogInformation("File could not be read.");
                 return buoyDataList;
             }
-
 
             // check data in file is in expected order
             string[] header = Regex.Replace(stream.ReadLine().Substring(1), @"\s+", ",").Split(',');
@@ -117,7 +116,7 @@ namespace BuoyInfoFunction
 
             if (header.Length != fields.Count)
             {
-                Console.WriteLine($"Unexpected number of fields in the file: {header.Length}");
+                log.LogError($"Unexpected number of fields in the file: {header.Length}");
                 return buoyDataList;
             }
 
@@ -125,7 +124,7 @@ namespace BuoyInfoFunction
             {
                 if (!fields[i].Equals(header[i]))
                 {
-                    Console.WriteLine($"Unexpected field: {header[i]}");
+                    log.LogError($"Unexpected field: {header[i]}");
                     return buoyDataList;
                 }
             }
@@ -207,7 +206,7 @@ namespace BuoyInfoFunction
 
 
 
-        public static Task DownloadFileAsync(string buoyId)
+        public static Task DownloadFileAsync(string buoyId, ILogger log)
         {
             if (buoyId.Length != 5) throw new InvalidDataException();
 
@@ -216,9 +215,26 @@ namespace BuoyInfoFunction
 
             return Task.Run(async () =>
             {
+                byte[] fileBytes = new byte[0];
                 HttpClient httpClient = new HttpClient();
-                byte[] fileBytes = await httpClient.GetByteArrayAsync(url);
-                File.WriteAllBytes(GetTempFilePath(buoyId), fileBytes);
+                try
+                {
+                    fileBytes = await httpClient.GetByteArrayAsync(url);
+                }
+                catch (HttpRequestException e)
+                {
+                    log.LogInformation("Could not download the file.", e);
+                }
+
+                if (fileBytes.Length > 0)
+                {
+                    File.WriteAllBytes(GetTempFilePath(buoyId), fileBytes);
+                }
+                else if (fileBytes.Length == 0 && File.Exists(GetTempFilePath(buoyId)))
+                {
+                    log.LogInformation("There was no data. Cleaning up the old file...");
+                    File.Delete(GetTempFilePath(buoyId));
+                }
             });
         }
 
