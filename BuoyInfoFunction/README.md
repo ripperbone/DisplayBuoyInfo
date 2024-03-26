@@ -7,6 +7,7 @@ Create local.settings.json file with the following contents:
 {
   "IsEncrypted": false,
   "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SendGridAPIKey": "<your SendGrid API key>",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "EMAIL_FROM_ADDRESS": "<user@somewhere.com>",
@@ -17,6 +18,13 @@ Create local.settings.json file with the following contents:
 ```
 
 Edit TimerTrigger so that `RunOnStartup = true`.
+
+Start azurite storage emulator.
+
+Run the function with:
+```
+func start
+```
 
 ### Deploying
 

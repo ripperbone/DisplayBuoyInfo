@@ -68,7 +68,9 @@ namespace BuoyInfoFunction
                 sendGridMessage.AddAttachment(fileName, Convert.ToBase64String(bytes));
             } else
             {
-                sendGridMessage.AddContent("text/plain", "There is no data to graph.");
+                log.LogInformation("There is no data to graph");
+                sendGridMessage = null; // no email message to send
+                return;
             }
         }
 
